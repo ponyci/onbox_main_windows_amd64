@@ -30,16 +30,16 @@ jobs:
       run: git rev-parse HEAD > COMMIT
     - name: Zip up build artifacts (zip)
       working-directory: onbox/
-      run: zip -r build.zip build/
+      run: tar.exe -acf build.zip build/
     - name: Zip up build artifacts (tar.gz)
       working-directory: onbox/
-      run: tar -acf build.tar.gz build/
+      run: tar.exe -acf build.tar.gz build/
     - name: Zip up build artifacts (tar.xz)
       working-directory: onbox/
-      run: tar -acf build.tar.xz build/
+      run: tar.exe -acf build.tar.xz build/
     - name: Zip up build artifacts (tar.zst)
       working-directory: onbox/
-      run: tar -acf build.tar.zst build/
+      run: tar.exe -acf build.tar.zst build/
     - name: Upload build artifacts (zip)
       uses: actions/upload-artifact@v5
       with:
