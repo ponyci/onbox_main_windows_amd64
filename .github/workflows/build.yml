@@ -21,7 +21,7 @@ jobs:
         restore-keys: nimble-${{ runner.os }}
     - name: Generate lock file
       working-directory: onbox/
-      run: Remove-Item -Force nimble.lock && nimble lock
+      run: nimble lock
     - name: Build app
       working-directory: onbox/
       run: nimble -d:release build
