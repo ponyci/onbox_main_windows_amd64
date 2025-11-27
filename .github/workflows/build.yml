@@ -1,0 +1,78 @@
+name: Build Nim App
+
+on:
+  repository_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: jiro4989/setup-nim-action@v1
+      with:
+        nim-version: 'stable'
+    - name: Clone repo
+      run: git clone "https://codeberg.org/onbox/onbox"
+    - name: Cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.nimble
+        key: nimble-${{ runner.os }}-${{ hashFiles('**/onbox/onbox.nimble') }}
+        restore-keys: nimble-${{ runner.os }}
+    - name: Generate lock file
+      working-directory: onbox/
+      run: rm -f nimble.lock && nimble lock
+    - name: Build app
+      working-directory: onbox/
+      run: nimble -d:release build
+    - name: Generate COMMIT file
+      working-directory: onbox/
+      run: git rev-parse HEAD > COMMIT
+    - name: Zip up build artifacts (zip)
+      working-directory: onbox/
+      run: zip -r build.zip build/
+    - name: Zip up build artifacts (tar.gz)
+      working-directory: onbox/
+      run: tar -acf build.tar.gz build/
+    - name: Zip up build artifacts (tar.xz)
+      working-directory: onbox/
+      run: tar -acf build.tar.xz build/
+    - name: Zip up build artifacts (tar.zst)
+      working-directory: onbox/
+      run: tar -acf build.tar.zst build/
+    - name: Upload build artifacts (zip)
+      uses: actions/upload-artifact@v5
+      with:
+        name: build.zip
+        path: onbox/build.zip
+        compression-level: 0
+    - name: Upload build artifacts (tar.gz)
+      uses: actions/upload-artifact@v5
+      with:
+        name: build.tar.gz
+        path: onbox/build.tar.gz
+        compression-level: 0
+    - name: Upload build artifacts (tar.xz)
+      uses: actions/upload-artifact@v5
+      with:
+        name: build.tar.xz
+        path: onbox/build.tar.xz
+        compression-level: 0
+    - name: Upload build artifacts (tar.zst)
+      uses: actions/upload-artifact@v5
+      with:
+        name: build.tar.zst
+        path: onbox/build.tar.zst
+        compression-level: 0
+    - name: Upload lockfile
+      uses: actions/upload-artifact@v5
+      with:
+        name: nimble.lock
+        path: onbox/nimble.lock
+        compression-level: 0
+    - name: Upload COMMIT file
+      uses: actions/upload-artifact@v5
+      with:
+        name: COMMIT
+        path: onbox/COMMIT
+        compression-level: 0
